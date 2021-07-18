@@ -4,6 +4,15 @@ import sys
 import scrambleGenerator
 
 
+"""
+--- TO DO ---
+1. Średnie czasów ao5, a012 oraz ogólna
+2. kolory na podstawie średniej ogólnej
+3. zapisywanie do pliku lokalnie + dodać do niego gitignore
+4. jakies ustawienia kolorów
+"""
+
+
 # ------ Functions ------
 def startTimer(event):
     global timer, startTime, isTimerRunning, canTimerStart
