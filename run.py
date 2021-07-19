@@ -14,6 +14,19 @@ import scrambleGenerator
 
 
 # ------ Functions ------
+def fileSave(time):
+    f = open("times.txt", "a")
+    f.write(str(time) + "\n")
+    f.close()
+
+def fileLoad():
+    global times
+    f = open("times.txt", "r")
+    for line in f:
+        times.insert(END, line)
+    f.close()
+
+
 def startTimer(event):
     global timer, startTime, isTimerRunning, canTimerStart
     if not isTimerRunning:
@@ -36,6 +49,7 @@ def stopTimer(event):
         else:
             timer.config(fg=SolvingColor, text=str(solveTime))
         times.insert(END, str(solveTime))
+        fileSave(solveTime)
         isTimerRunning = False
         doScrambleString()
 
@@ -417,5 +431,6 @@ window.bind("<KeyPress>", keydown)
 mainFrame.pack(fill="both", expand=True)
 
 doScrambleString()
+fileLoad()
 
 window.mainloop()
