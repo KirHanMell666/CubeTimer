@@ -1,3 +1,4 @@
+import os
 from tkinter import *
 import time
 import sys
@@ -8,23 +9,34 @@ import scrambleGenerator
 --- TO DO ---
 1. Średnie czasów ao5, a012 oraz ogólna
 2. kolory na podstawie średniej ogólnej
-3. zapisywanie do pliku lokalnie + dodać do niego gitignore
+3. zapisywanie do pliku lokalnie + dodać do niego gitignore # --- # DONE
 4. jakies ustawienia kolorów
 """
 
 
 # ------ Functions ------
+
 def fileSave(time):
-    f = open("times.txt", "a")
+    global timesTXT
+    f = open(timesTXT, "a")
     f.write(str(time) + "\n")
     f.close()
 
+
 def fileLoad():
-    global times
-    f = open("times.txt", "r")
-    for line in f:
-        times.insert(END, line)
-    f.close()
+    global times, timesTXT
+    if os.path.isfile(timesTXT):
+        f = open(timesTXT, "r")
+        for line in f:
+            times.insert(END, line)
+        f.close()
+
+
+def clearTimes():
+    global timesTXT, times
+    if os.path.isfile(timesTXT):
+        os.remove(timesTXT, dir_fd=None)
+        times.delete(0, END)
 
 
 def startTimer(event):
@@ -70,7 +82,52 @@ def stopTimerOnButton():
 
 
 def useSettings():
-    pass
+    global R, G, B, settingsWindow
+
+    #Zdefiniowac poza funkcją okno, stworzyc w funkcji i przypisac do tego zdefiniowanego poza funkcją
+    newWindow = Tk()
+    newWindow.geometry("500x300")
+    newWindow.config()
+
+    settingsFrameNewWindow = Frame(newWindow)
+
+    RcolorSlider = Scale(settingsFrameNewWindow, from_=0, to=255, orient=HORIZONTAL, width=20, length=200)
+    GcolorSlider = Scale(settingsFrameNewWindow, from_=0, to=255, orient=HORIZONTAL, width=20, length=200)
+    BcolorSlider = Scale(settingsFrameNewWindow, from_=0, to=255, orient=HORIZONTAL, width=20, length=200)
+
+    canvas = Canvas(settingsFrameNewWindow, bg=BGColor, width=200, height=200)
+
+    newWindow.withdraw()
+
+    newWindow.deiconify()
+
+    # --- RED ---
+    RcolorSlider.set(R)
+    RcolorSlider.grid(column=0, row=1)
+
+    RcolorLabel = Label(settingsFrameNewWindow, text="Red")
+    RcolorLabel.grid(column=1, row=1)
+
+    # --- GREEN ---
+    GcolorSlider.set(G)
+    GcolorSlider.grid(column=0, row=2)
+
+    GcolorLabel = Label(settingsFrameNewWindow, text="Green")
+    GcolorLabel.grid(column=1, row=2)
+
+    # --- BLUE ---
+    BcolorSlider.set(B)
+    BcolorSlider.grid(column=0, row=3)
+
+    BcolorLabel = Label(settingsFrameNewWindow, text="Blue")
+    BcolorLabel.grid(column=1, row=3)
+
+    # --- CANVAS ---
+    canvas.grid(column=2, row=1, rowspan=3, pady=25)
+
+    settingsFrameNewWindow.pack()
+    newWindow.mainloop()
+    settingsWindow = newWindow
 
 
 def closeApp():
@@ -212,6 +269,8 @@ previousScramble = []
 scrambleString = ""
 previousScrambleString = ""
 
+timesTXT = "times.txt"
+
 # ------ Colors ------
 BGColor = "#ababab"
 SettingsBGColor = "#7b7b7b"
@@ -219,7 +278,9 @@ StartColor = "#09d940"
 StopColor = "#cc0000"
 NeutralColor = "#1f1f1f"
 SolvingColor = "#ebb505"
-
+R = 171
+G = 171
+B = 171
 # ------ Window Config ------
 
 window = Tk()
@@ -230,6 +291,10 @@ window.config(bg=BGColor)
 
 mainFrame = Frame(window, bg=BGColor)
 
+# ------ Settings Window ------
+settingsWindow = Tk()
+settingsWindow.withdraw()
+
 # ------ Upper Frame ------
 upperFrame = Frame(mainFrame, bg=BGColor)
 
@@ -239,10 +304,10 @@ label.grid(row=0, column=0, sticky="nsew")
 scrambleLabel = Label(upperFrame, text="", bg=BGColor, font=("Courier", 20), pady=5, width=40)
 scrambleLabel.grid(row=1, column=0, sticky="nsew")
 
-photo = PhotoImage(file=r"close.png")
-imageClose = photo.subsample(6, 6)
+#photo = PhotoImage(file=r"close.png")
+#imageClose = photo.subsample(6, 6)
 
-bClose = Button(upperFrame, image=imageClose, bg=SettingsBGColor, command=closeApp)
+bClose = Button(upperFrame, text="Clear\nTimes", font=("Courier", 20), bg=SettingsBGColor, command=clearTimes )
 bClose.grid(row=0, column=1, rowspan=2, sticky="nsew")
 
 upperFrame.grid_columnconfigure(0, weight=15)
